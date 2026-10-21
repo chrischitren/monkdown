@@ -41,6 +41,11 @@ void printscanresults(Node *n, int outputs[MAX_DOCSZ][3], int osz);
 void printcharspecial(char c);
 
 
+int main() {
+	freerecursive(parsemd("README.md"));
+	return(0);
+}
+
 /****************************************************************************/
 /* TOP-LEVEL FUNCTIONS                                                      */
 /****************************************************************************/
@@ -55,7 +60,7 @@ Node *parsemd(char *dir) {
 	while (maxdepth > 0 && rscansplit(docnode) != 0) {
 		maxdepth--;
 	}
-/*	printnodes(docnode, 0, 1);*/
+	printnodes(docnode, 0, 1);
 	return(docnode);
 }
 
@@ -543,7 +548,7 @@ int handleblockquote(Node *n) {
 /* Open a file and write the whole thing to nodes, chunk-wise */
 int readtonodes(char *dir, Node *_parent) {
 	FILE *fp;
-	char buffer[READ_BUFFER_SZ];
+	char buffer[READBUF_SZ];
 	int readlen;
 	
 	if ((fp = fopen(dir, "r")) == NULL) {
@@ -553,7 +558,7 @@ int readtonodes(char *dir, Node *_parent) {
 	}
 	
 	/* Outer loop to skip blank lines */
-	while (fgets(buffer, 4096, fp) != NULL) {
+	while (fgets(buffer, READBUF_SZ, fp) != NULL) {
 		if (buffer[0] == '\n') {
 			continue;
 		} else {
@@ -561,7 +566,7 @@ int readtonodes(char *dir, Node *_parent) {
 			/* If we're entering a code block, loop until we find the end */
 			if (strncmp("```", buffer, 3) == 0) {
 				readlen = 0;
-				while(fgets(buffer+readlen, 4096-readlen, fp) != NULL) {
+				while(fgets(buffer+readlen, READBUF_SZ-readlen, fp) != NULL) {
 					if (strncmp("```", buffer+readlen, 3) == 0) {
 						readlen--;
 						buffer[readlen] = '\0';
@@ -572,7 +577,7 @@ int readtonodes(char *dir, Node *_parent) {
 				}
 				createnode(buffer, readlen, _parent, TYPE_PRE);
 			} else { /* otherwise, loop until we find a blank line (or EOF) */
-				while (fgets(buffer+readlen, 4096-readlen, fp) != NULL) {
+				while (fgets(buffer+readlen, READBUF_SZ-readlen, fp) != NULL) {
 					if (buffer[readlen] == '\n') {
 						readlen--;
 						buffer[readlen] = '\0';

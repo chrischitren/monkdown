@@ -3,7 +3,7 @@
 
 /* Maximum number of "blocks" in a single document */
 #define MAX_DOCSZ 256
-#define READ_BUFFER_SZ 4096
+#define READBUF_SZ 4096
 
 enum nodetype {
 	TYPE_PLAIN = 0, /* plain text!!! */
