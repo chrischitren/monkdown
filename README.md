@@ -33,7 +33,7 @@ Ideally, the Parser does not "know" that its outputs will eventually become HTML
 
 ### Parsing
 
-The parser works in two stages: a bird's-eye-view separation of the document into contiguous **blocks**, and **inline parsing** of the text content of blocks. Blocks correspond to `<pre>` (````code blocks````), `<ul>` (`- unordered lists`), `<h1>` and co. (`# headings`), and plain text.
+The parser works in two stages: a bird's-eye-view separation of the document into contiguous **blocks**, and **inline parsing** of the text content of blocks. Blocks correspond to `<pre>` (code blocks), `<ul>` (unordered lists), `<h1>` and co. (headings), and plain text.
 
 ### Writing
 
