@@ -12,12 +12,12 @@ enum nodetype {
 	TYPE_P, TYPE_LI, TYPE_EM, TYPE_STRONG, TYPE_A, TYPE_CODE,
 	TYPE_ESCAPED, TYPE_MAXTYPE /* used for indexing */
 };
-
-const char *type_str[19] = {"PLAIN", "h1", "h2", "h3", "h4", "h5", "h6", "img",
-							"blockquote", "pre", "ul", "p", "li", "em",
-							"strong", "a", "code", "ESC", "MAXTYPE"};
-
 typedef struct node Node;
+
+static const char *type_str[19] = 
+	{"PLAIN", "h1", "h2", "h3", "h4", "h5", "h6", "img",
+	"blockquote", "pre", "ul", "p", "li", "em",
+	"strong", "a", "code", "ESC", "MAXTYPE"};
 
 struct node {
 	Node *parent;

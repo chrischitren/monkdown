@@ -4,9 +4,10 @@ I realized that I had learned a lot from [my first attempt to parse Markdown](ht
 
 In pursuit of spiritual enlightenment, or perhaps clarity of mind (if there is a distinction between the two), I decided that I had probably learned enough to solve the problem myself. I defined the discipline I would follow:
 
-- I can only search [this C reference manual](https://en.cppreference.com/c/).
+- I can only search [this C reference manual](https://en.cppreference.com/c).
 - I can only write code by hand in a text editor (vim).
-- Everything must compile, with no errors, to the standard set by `gcc -Wpedantic -Wall -std=c89`.
+- Everything must compile, with no errors, to the standard set by
+`gcc -Wpedantic -Wall -std=c89`.
 
 Like all creative works, it is derivative of the things I exposed myself to during the learning phase, but it is not *plagiaristic;* it is wholly my own construction and thus is wholly representative of my capacity to design. The final product is more extensible, coherent, and probably reliable than the spaghetti of my first attempt, but it is still the product of a single fallible human, and is quite myopic in scope. For one, I am chronically bad at error handling. I have too much faith in edge cases being rare. It is not "production" code because it is not robust or well-tested, and it does not conform to a well-defined specification. It is art code.
 

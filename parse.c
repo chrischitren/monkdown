@@ -41,11 +41,6 @@ void printscanresults(Node *n, int outputs[MAX_DOCSZ][3], int osz);
 void printcharspecial(char c);
 
 
-int main() {
-	freerecursive(parsemd("README.md"));
-	return(0);
-}
-
 /****************************************************************************/
 /* TOP-LEVEL FUNCTIONS                                                      */
 /****************************************************************************/
@@ -60,7 +55,7 @@ Node *parsemd(char *dir) {
 	while (maxdepth > 0 && rscansplit(docnode) != 0) {
 		maxdepth--;
 	}
-	printnodes(docnode, 0, 1);
+/*	printnodes(docnode, 0, 1);*/
 	return(docnode);
 }
 
