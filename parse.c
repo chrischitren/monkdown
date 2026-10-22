@@ -506,6 +506,8 @@ int handleblockquote(Node *n) {
 	int i = 0;
 	int laststart = 0;
 	int writeskip = 0;
+	int rightalign = 0;
+	Node *linenode;
 	
 	if (n->content[0] != '>') {
 		printf("\x1b[31m[parse] [handleblockquote] "
@@ -515,7 +517,13 @@ int handleblockquote(Node *n) {
 	}
 	while (i <= n->contentlen) {
 		if (n->content[i] == '\n' || n->content[i] == '\0') {
-			if (strncmp(n->content+laststart, "> ", 2) == 0) {
+			if (strncmp(n->content+laststart, ">> ", 3) == 0) {
+				writeskip = 3;
+				rightalign = 1;
+			} else if (strncmp(n->content+laststart, ">>", 2) == 0) {
+				writeskip = 2;
+				rightalign = 1;
+			} else if (strncmp(n->content+laststart, "> ", 2) == 0) {
 				writeskip = 2;
 			} else if (n->content[laststart] == '>') {
 				writeskip = 1;
@@ -523,8 +531,11 @@ int handleblockquote(Node *n) {
 				writeskip = 0;
 			}
 			if (laststart != i) {
-				createnode(n->content+laststart+writeskip,
-						   i-laststart-writeskip, n, TYPE_P);
+				linenode = createnode(n->content+laststart+writeskip,
+									i-laststart-writeskip, n, TYPE_P);
+				if (rightalign == 1) {
+					addattribute(linenode, "class", "right", strlen("right"));
+				}
 			}
 			laststart = i+1;
 		}
@@ -699,8 +710,6 @@ int addattribute(Node *n, const char *key, char *str, int len) {
 int freenodes(Node *n) {
 	int i = 0;
 	
-	
-
 	for (i = 0; i < n->numchildren; i++) {
 		if (n->children[i] != NULL) {
 			freenodes(n->children[i]);
