@@ -781,9 +781,9 @@ void printnodes(Node *n, int depth, int verbose) {
 	padstring[4*depth] = '\0';
 	
 	if (!(n->isterminal)) {
-		printf("%s+---- %s", padstring, type_str[n->type]);
+		printf("%s+---- %s", padstring, gettypestr(n->type));
 	} else {
-		printf("%s+---- \x1b[36m%s\x1b[0m", padstring, type_str[n->type]);
+		printf("%s+---- \x1b[36m%s\x1b[0m", padstring, gettypestr(n->type));
 	}
 	if (n->attributes != NULL) {
 		printf("\x1b[32m%s\x1b[0m", n->attributes);
@@ -830,7 +830,7 @@ void printscanresults(Node *n, int outputs[MAX_DOCSZ][3], int osz) {
 					}
 				}
 				if (i == n->contentlen) {
-					printf("%s", type_str[outputs[k][2]]);
+					printf("%s", gettypestr(outputs[k][2]));
 				}
 			}
 			printf("\n\x1b[93m");
