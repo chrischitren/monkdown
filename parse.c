@@ -4,7 +4,6 @@
 
 #include "parse.h"
 
-
 /* INLINE PARSING (RECURSIVE) */
 int rscansplit(Node *doc);
 
@@ -42,7 +41,7 @@ void printcharspecial(char c);
 
 
 /****************************************************************************/
-/* TOP-LEVEL FUNCTIONS                                                      */
+/* TOP-LEVEL FUNCTIONS (defined in parse.h)                                 */
 /****************************************************************************/
 
 Node *parsemd(char *dir) {
@@ -61,6 +60,44 @@ Node *parsemd(char *dir) {
 
 int freerecursive(Node *n) {
 	return(freenodes(n));
+}
+
+int countnodes(Node *n) {
+	int i;
+	int count = 1;
+	if (n->numchildren == 0) {
+		return(count);
+	}
+	for(i = 0; i < n->numchildren; i++) {
+		count += countnodes(n->children[i]);
+	}
+
+	return(count);
+}
+
+char *gettypestr(int type) {
+	switch (type) {
+		case TYPE_PLAIN: return("PLAIN"); break;
+		case TYPE_H1: return("h1"); break;
+		case TYPE_H2: return("h2"); break;
+		case TYPE_H3: return("h3"); break;
+		case TYPE_H4: return("h4"); break;
+		case TYPE_H5: return("h5"); break;
+		case TYPE_H6: return("h6"); break;
+		case TYPE_IMG: return("img"); break;
+		case TYPE_BLOCKQUOTE: return("blockquote"); break;
+		case TYPE_PRE: return("pre"); break;
+		case TYPE_UL: return("ul"); break;
+		case TYPE_P: return("p"); break;
+		case TYPE_LI: return("li"); break;
+		case TYPE_EM: return("em"); break;
+		case TYPE_STRONG: return("strong"); break;
+		case TYPE_A: return("a"); break;
+		case TYPE_CODE: return("code"); break;	
+		case TYPE_ESCAPED: return("ESC"); break;
+		case TYPE_MAXTYPE: return("MAXTYPE"); break;
+		default: return("INVALID TYPE"); break;
+	}
 }
 
 /****************************************************************************/

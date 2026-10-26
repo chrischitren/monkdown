@@ -1,6 +1,6 @@
 # Monkdown
 
-I realized that I had learned a lot from [my first attempt to parse Markdown](https://github.com/chrischitren/site/), but that the project was something of a Rube-Goldbergian abomination of ad hoc solutions to ill-defined problems. In the messy process of learning, all in parallel, what *could* be done, what *should* be done, and what *must* be done, I made something that more closely resembled a collage than a tool. This kind of product is a natural consequence of working with constant access to information.
+I realized that I had learned a lot from [my first attempt to parse Markdown](https://github.com/chrischitren/site/tree/main), but that the project was something of a Rube-Goldbergian abomination of ad hoc solutions to ill-defined problems. In the messy process of learning, all in parallel, what *could* be done, what *should* be done, and what *must* be done, I made something that more closely resembled a collage than a tool. This kind of product is a natural consequence of working with constant access to information.
 
 In pursuit of spiritual enlightenment, or perhaps clarity of mind (if there is a distinction between the two), I decided that I had probably learned enough to solve the problem myself. I defined the discipline I would follow:
 

@@ -14,11 +14,6 @@ enum nodetype {
 };
 typedef struct node Node;
 
-static const char *type_str[19] = 
-	{"PLAIN", "h1", "h2", "h3", "h4", "h5", "h6", "img",
-	"blockquote", "pre", "ul", "p", "li", "em",
-	"strong", "a", "code", "ESC", "MAXTYPE"};
-
 struct node {
 	Node *parent;
 	Node **children;
@@ -33,5 +28,7 @@ struct node {
 /* TOP-LEVEL FUNCTIONS */
 Node *parsemd(char *dir);
 int freerecursive(Node *n);
+int countnodes(Node *n);
+char *gettypestr(int type);
 
 #endif
