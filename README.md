@@ -39,7 +39,31 @@ Ideally, the Parser does not "know" that its outputs will eventually become HTML
 
 The parser works in two stages: a bird's-eye-view separation of the document into contiguous **blocks**, and **inline parsing** of the text content of blocks. Blocks correspond to `<pre>` (code blocks), `<ul>` (unordered lists), `<h1>` and co. (headings), and plain text.
 
+### Blocks
+
+Blocks cannot be nested. This is a feature of Markdown that has been omitted here. A blockquote cannot reside inside a list item. I am not too concerned about this because I have only rarely seen it used, and because I have never wanted such a feature. The idea has a formal beauty: that Nodes, agnostic to their positions, are atomic, and that documents can be infinitely nested and arbitrarily structured. This beauty, however, is at odds with what Markdown's features suggest a document's structure should be: headings define sections that contain contents, and contents are like those of printed matter. If I wanted to express something outside of these constraints, I would use a different tool. Like a pencil.
+
+- Blocks are delimited by blank lines, except for code blocks, which must start and end with three backticks.
+- Blocks are identified by their first character(s). This one, for example, is an unordered list because it starts with a hyphen.
+- Blocks are stripped of their control characters so that the rest of the document can be parsed inline.
+- Blocks are "easy" to add more of, if this is needed. Not "easy" in the sense of a configuration file with a simple human-readable syntax, but easy in that the block-level parsing functions just need some new cases. Hackable.
+
+### Inline Elements
+
+Each inline style is requests two functions:
+
+- `scan` functions return run-lengths by looking for control characters.
+- `split` functions build Nodes based on strings that were extracted by `scan` functions.
+
+In a beautiful implementation, the `scan` functions would be regular expressions.
+
+All nodes which are not terminal are scanned and lists of scan results are produced. Results may not overlap. Nodes have their contents distributed among newly-created children: scan-result-Nodes interleaved with unformatted-content-Nodes. Scan-result-Nodes go through 'split' functions, and unformatted-content-Nodes are simply appended as terminal plaintext Nodes. Split functions decide whether the Nodes they produce should be terminal.
+
+The process is repeated until either a predefined limit is reached, or every Node without children `isterminal`. A better term for this would have been `isfrozen`, since "terminal" has established meaning in the context of trees.
+
 ## Writing
 
-This part doesn't quite exist yet. 
+Writing is easy. The document tree is walked, depth-first, and tags are printed according to Nodes' types. If a Node has an `attributes` string, it is printed within the tag. Nodes' contents are printed. All the Node's children are given the same treatment, and then the matching closing tag is printed (unless it's an `<img>`).
+
+We did the hard work when we built the tree intelligently, so the structure of the document tree aligns well with the syntax of HTML.
 
