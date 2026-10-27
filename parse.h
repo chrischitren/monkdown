@@ -26,7 +26,7 @@ struct node {
 };
 
 /* TOP-LEVEL FUNCTIONS */
-Node *parsemd(char *dir);
+Node *parsemd(FILE *fp);
 int freerecursive(Node *n);
 int countnodes(Node *n);
 char *gettypestr(int type);

@@ -10,19 +10,11 @@ void writehtmlnoderecursive(FILE *wfp, Node *n);
 void writehtmlstringescaped(FILE *wfp, char *str);
 
 
-int writehtmlfromtemplate(FILE *wfp, char *templatedir,
+int writehtmlfromtemplate(FILE *wfp, FILE *templatefp,
 					char *title, Node *header, Node *main, Node *footer) {
-	
-	FILE *templatefp;
 	char c;
 	int i;
 	char controlbuffer[16];
-	
-	if ((templatefp = fopen(templatedir, "r")) == NULL) {
-		printf("\x1b[31m[write] [writehtmlfromtemplate] "
-				"failed to open template: \"%s\"\x1b[0m\n", templatedir);
-		return(1);
-	}
 	
 	while ((c = fgetc(templatefp)) != EOF) {
 		if (c == '%') {
@@ -53,16 +45,15 @@ int writehtmlfromtemplate(FILE *wfp, char *templatedir,
 					fprintf(wfp, "%%%s%%", controlbuffer);
 				}
 			} else {
-				printf("In template \"%s\" at pos %ld:\n"
+				printf("In template at pos %ld:\n"
 						"    ignoring misidentified or malformed key \"%s\"\n",
-						templatedir, ftell(templatefp), controlbuffer);
+						ftell(templatefp), controlbuffer);
 				fprintf(wfp, "%%%s%c", controlbuffer, c);
 			}
 		} else {
 			fputc(c, wfp);
 		}
 	}
-	fclose(templatefp);
 	return(0);
 }
 

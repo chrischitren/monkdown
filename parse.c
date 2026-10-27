@@ -25,7 +25,7 @@ int handleul(Node *n);
 int handleblockquote(Node *n);
 
 /* DOCUMENT BLOCK IDENTIFICATION */
-int readtonodes(char *dir, Node *_parent);
+int readtonodes(FILE *fp, Node *_parent);
 int getblocktype(char *s, int sz);
 
 /* NODE HANDLING */
@@ -44,11 +44,11 @@ void printcharspecial(char c);
 /* TOP-LEVEL FUNCTIONS (defined in parse.h)                                 */
 /****************************************************************************/
 
-Node *parsemd(char *dir) {
+Node *parsemd(FILE *fp) {
 	Node *docnode;
 	int maxdepth = MAX_DOCSZ;
 	docnode = createnode("", 0, NULL, TYPE_MAXTYPE);
-	readtonodes(dir, docnode);
+	readtonodes(fp, docnode);
 	parseblocklevel(docnode);
 /*	printnodes(docnode, 0, 1);*/
 	while (maxdepth > 0 && rscansplit(docnode) != 0) {
@@ -589,16 +589,9 @@ int handleblockquote(Node *n) {
 /****************************************************************************/
 
 /* Open a file and write the whole thing to nodes, chunk-wise */
-int readtonodes(char *dir, Node *_parent) {
-	FILE *fp;
+int readtonodes(FILE *fp, Node *_parent) {
 	char buffer[READBUF_SZ];
 	int readlen;
-	
-	if ((fp = fopen(dir, "r")) == NULL) {
-		printf("\x1b[31m[parse] [readtonodes] "
-				"failed to open file %s\x1b[0m\n", dir);
-		return(1);
-	}
 	
 	/* Outer loop to skip blank lines */
 	while (fgets(buffer, READBUF_SZ, fp) != NULL) {
@@ -635,7 +628,6 @@ int readtonodes(char *dir, Node *_parent) {
 			}
 		}
 	}
-	fclose(fp);
 	return(0);
 }
 
