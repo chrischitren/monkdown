@@ -466,6 +466,8 @@ int parseblocklevel(Node *doc) {
 
 
 int handleh(Node *n) {
+	char idstr[256];
+	char *p;
 	int i = n->type - TYPE_H1 + 1;
 	if (n->content[i] == ' ') {
 		i++;
@@ -473,6 +475,16 @@ int handleh(Node *n) {
 	memmove(n->content, n->content+i, n->contentlen - i);
 	n->contentlen = n->contentlen-i;
 	n->content[n->contentlen] = '\0';
+	
+	/* Generate an 'id' attribute and add a link to the heading */
+	strcpy(idstr, n->content);
+	while (p = strchr(idstr, ' ') != NULL) {
+		*p = '_';
+	}
+	while (p = strchr(idstr, '\t') != NULL) {
+		*p = '-';
+	}
+	addattribute(n, "id", idstr, strlen(idstr));
 	return(0);
 }
 
