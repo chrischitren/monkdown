@@ -478,13 +478,21 @@ int handleh(Node *n) {
 	
 	/* Generate an 'id' attribute and add a link to the heading */
 	strcpy(idstr, n->content);
-	while (p = strchr(idstr, ' ') != NULL) {
+	while ((p = strchr(idstr, ' ')) != NULL) {
 		*p = '_';
 	}
-	while (p = strchr(idstr, '\t') != NULL) {
+	while ((p = strchr(idstr, '\t')) != NULL) {
 		*p = '-';
 	}
 	addattribute(n, "id", idstr, strlen(idstr));
+	
+	n->contentlen += strlen(idstr)+7;                  /* 7 for " [#](#)" */
+	n->content = realloc(n->content, n->contentlen+1); /* and 1 for '\0'  */
+	
+	strcat(n->content, " [#](#");
+	strcat(n->content, idstr);
+	strcat(n->content, ")");
+
 	return(0);
 }
 
