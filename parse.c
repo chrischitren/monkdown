@@ -30,9 +30,7 @@ int getblocktype(char *s, int sz);
 
 
 /* DEBUGGING */
-void printnodes(Node *n, int depth, int verbose);
 void printscanresults(Node *n, int outputs[MAX_DOCSZ][3], int osz);
-void printcharspecial(char c);
 
 
 /****************************************************************************/
@@ -56,6 +54,10 @@ Node *parsemd(FILE *fp) {
 int countnodes(Node *n) {
 	int i;
 	int count = 1;
+	
+	if (n == NULL) {
+		return(0);
+	}
 	if (n->numchildren == 0) {
 		return(count);
 	}
@@ -160,7 +162,7 @@ int scansplit(Node *n) {
 			outputs[j][0] = i;
 			outputs[j][1] = scanresult;
 			outputs[j][2] = scantype;
-			i += scanresult;
+			i += scanresult-1;
 			j++;
 		}
 	}
@@ -467,6 +469,8 @@ int handleh(Node *n) {
 	n->contentlen = n->contentlen-i;
 	n->content[n->contentlen] = '\0';
 	
+	/* TODO THIS IS A HACK!! IT SHOULD HAPPEN LATER AND APPEND A NEW
+	   NODE TO THE HEADING NODE WITH A SPECIFIC CLASS ATTRIBUTE */
 	/* Generate an 'id' attribute and add a link to the heading */
 	strcpy(idstr, n->content);
 	while ((p = strchr(idstr, ' ')) != NULL) {
@@ -477,7 +481,7 @@ int handleh(Node *n) {
 	}
 	addattribute(n, "id", idstr, strlen(idstr));
 	
-	n->contentlen += strlen(idstr)+6;                  /* 7 for " [#](#)" */
+	n->contentlen += strlen(idstr)+7;                  /* 7 for " [#](#)" */
 	n->content = realloc(n->content, n->contentlen+1); /* and 1 for '\0'  */
 	
 	strcat(n->content, "[#](#");
@@ -750,6 +754,10 @@ int addattribute(Node *n, const char *key, char *str, int len) {
 int freenodes(Node *n) {
 	int i = 0;
 	
+	if (n == NULL) {
+		return(1);
+	}
+
 	for (i = 0; i < n->numchildren; i++) {
 		if (n->children[i] != NULL) {
 			freenodes(n->children[i]);

@@ -2,7 +2,8 @@
 #define PARSE_H
 
 /* Maximum number of "blocks" in a single document */
-#define MAX_DOCSZ 256
+#define MAX_DOCSZ 512
+/* Maximum size of a single block */
 #define READBUF_SZ 4096
 
 enum nodetype {
@@ -35,5 +36,9 @@ Node *createnode(char *_content, int _contentlen, Node *_parent, int _type);
 int clearnodecontent(Node *n);
 int addattribute(Node *n, const char *key, char *str, int len);
 int freenodes(Node *n);
+
+/* DEBUGGING */
+void printnodes(Node *n, int depth, int verbose);
+void printcharspecial(char c);
 
 #endif
