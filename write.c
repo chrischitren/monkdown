@@ -6,7 +6,6 @@
 #include "write.h"
 
 /* WRITING SINGLE NODE TREES */
-void writehtmlnoderecursive(FILE *wfp, Node *n);
 void writehtmlstringescaped(FILE *wfp, char *str);
 
 

@@ -27,8 +27,13 @@ struct node {
 
 /* TOP-LEVEL FUNCTIONS */
 Node *parsemd(FILE *fp);
-int freerecursive(Node *n);
 int countnodes(Node *n);
 char *gettypestr(int type);
+
+/* NODE HANDLING */
+Node *createnode(char *_content, int _contentlen, Node *_parent, int _type);
+int clearnodecontent(Node *n);
+int addattribute(Node *n, const char *key, char *str, int len);
+int freenodes(Node *n);
 
 #endif

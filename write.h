@@ -7,4 +7,6 @@
 int writehtmlfromtemplate(FILE *wfp, FILE *templatefp,
 					char *title, Node *header, Node *main, Node *footer);
 
+void writehtmlnoderecursive(FILE *wfp, Node *n);
+
 #endif

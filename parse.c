@@ -28,11 +28,6 @@ int handleblockquote(Node *n);
 int readtonodes(FILE *fp, Node *_parent);
 int getblocktype(char *s, int sz);
 
-/* NODE HANDLING */
-Node *createnode(char *_content, int _contentlen, Node *_parent, int _type);
-int clearnodecontent(Node *n);
-int addattribute(Node *n, const char *key, char *str, int len);
-int freenodes(Node *n);
 
 /* DEBUGGING */
 void printnodes(Node *n, int depth, int verbose);
@@ -56,10 +51,6 @@ Node *parsemd(FILE *fp) {
 	}
 /*	printnodes(docnode, 0, 1);*/
 	return(docnode);
-}
-
-int freerecursive(Node *n) {
-	return(freenodes(n));
 }
 
 int countnodes(Node *n) {
