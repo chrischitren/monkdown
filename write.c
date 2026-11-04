@@ -59,6 +59,8 @@ int writehtmlfromtemplate(FILE *wfp, FILE *templatefp,
 void writehtmlnoderecursive(FILE *wfp, Node *n) {
 	int i = 0;
 	int tag = 1;
+
+	char buf[MAX_ATTRIBUTESZ*8];
 	
 	if (n->type == TYPE_PLAIN 
 			|| n->type == TYPE_ESCAPED 
@@ -68,7 +70,8 @@ void writehtmlnoderecursive(FILE *wfp, Node *n) {
 	
 	if (tag) {
 		if (n->attributes != NULL) {
-			fprintf(wfp, "<%s%s>", gettypestr(n->type), n->attributes);
+			getattributestring(buf, MAX_ATTRIBUTESZ*8, n);
+			fprintf(wfp, "<%s%s>", gettypestr(n->type), buf);
 		} else {
 			fprintf(wfp, "<%s>", gettypestr(n->type));
 		}

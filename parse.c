@@ -468,10 +468,10 @@ int handleh(Node *n) {
 	memmove(n->content, n->content+i, n->contentlen - i);
 	n->contentlen = n->contentlen-i;
 	n->content[n->contentlen] = '\0';
-	
-	/* TODO THIS IS A HACK!! IT SHOULD HAPPEN LATER AND APPEND A NEW
-	   NODE TO THE HEADING NODE WITH A SPECIFIC CLASS ATTRIBUTE */
-	/* Generate an 'id' attribute and add a link to the heading */
+/*	
+	?* TODO THIS IS A HACK!! IT SHOULD HAPPEN LATER AND APPEND A NEW
+	   NODE TO THE HEADING NODE WITH A SPECIFIC CLASS ATTRIBUTE *?
+	?* Generate an 'id' attribute and add a link to the heading *?
 	strcpy(idstr, n->content);
 	while ((p = strchr(idstr, ' ')) != NULL) {
 		*p = '_';
@@ -481,13 +481,13 @@ int handleh(Node *n) {
 	}
 	addattribute(n, "id", idstr, strlen(idstr));
 	
-	n->contentlen += strlen(idstr)+7;                  /* 7 for " [#](#)" */
-	n->content = realloc(n->content, n->contentlen+1); /* and 1 for '\0'  */
+	n->contentlen += strlen(idstr)+7;                  ?* 7 for " [#](#)" *?
+	n->content = realloc(n->content, n->contentlen+1); ?* and 1 for '\0'  *?
 	
 	strcat(n->content, "[#](#");
 	strcat(n->content, idstr);
 	strcat(n->content, ")");
-
+*/
 	return(0);
 }
 
@@ -681,7 +681,7 @@ Node *createnode(char *_content, int _contentlen, Node *_parent, int _type) {
 	n = malloc(sizeof(Node));
 	
 	n->parent = _parent;
-
+	
 	if (_parent != NULL) {
 			_parent->children = realloc(_parent->children,
 									sizeof(Node*) * (_parent->numchildren+1));
@@ -699,6 +699,7 @@ Node *createnode(char *_content, int _contentlen, Node *_parent, int _type) {
 	
 	/* Write metadata */
 	n->attributes = NULL;
+	n->numattributes = 0;
 	n->contentlen = _contentlen;
 	n->type = _type;
 	n->isterminal = 0;
@@ -706,8 +707,6 @@ Node *createnode(char *_content, int _contentlen, Node *_parent, int _type) {
 	/* Give back the pointer to the newly allocated Node */
 	return(n);
 }
-
-
 
 int clearnodecontent(Node *n) {
 	if (n->content != NULL) {
@@ -721,34 +720,6 @@ int clearnodecontent(Node *n) {
 		return(1);
 	}
 }
-
-
-int addattribute(Node *n, const char *key, char *str, int len) {
-	char *buffer;
-	int buffersz;
-	buffersz = len+strlen(key)+6;
-	buffer = malloc(sizeof(char) * buffersz);
-	/* 'key="str" 0' (where 0 is null terminator) */
-	/*     12   345  extra characters needed      */
-
-	strcpy(buffer, " ");
-	strcat(buffer, key);
-	strcat(buffer, "=\"");
-	strncat(buffer, str, len);
-	strcat(buffer, "\"");
-
-	if (n->attributes == NULL) {
-		n->attributes = malloc(sizeof(char) * buffersz);
-		strcpy(n->attributes, buffer);
-	} else {
-		n->attributes = realloc(n->attributes, 
-						sizeof(char)*(buffersz+strlen(n->attributes)+1) );
-		strcat(n->attributes, buffer);
-	}
-	free(buffer);
-	return(0);
-}
-
 
 /* Depth-first search of a Node tree, freeing as we go. */
 int freenodes(Node *n) {
@@ -765,6 +736,9 @@ int freenodes(Node *n) {
 	}
 
 	if(n->attributes != NULL) {
+		for (i = 0; i < n->numattributes; i++) {
+			freeattribute(n->attributes[i]);
+		}
 		free(n->attributes);
 	}
 	
@@ -775,6 +749,146 @@ int freenodes(Node *n) {
 	return(0);
 }
 
+/****************************************************************************/
+/* ATTRIBUTE HANDLING                                                       */
+/****************************************************************************/
+
+/* Create an Attribute (key-value pair) and append a pointer to it to a Node's
+   attributes list. */
+int addattribute(Node *n, char *key, char *value, int valuelen) {
+	char val[MAX_ATTRIBUTESZ];
+	Attribute *a = NULL;
+
+	if (valuelen > MAX_ATTRIBUTESZ-1) {
+		valuelen = MAX_ATTRIBUTESZ-1;
+		printf("\x1b[31m[parse] [addattribute] "
+			"truncating attribute value larger than "
+			"MAX_ATTRIBUTESZ=%d\x1b[0m\n", MAX_ATTRIBUTESZ);
+	}
+	
+	strncpy(val, value, valuelen);
+	val[valuelen] = '\0';
+	
+	/* Initialize an Attribute */
+	a = malloc(sizeof(Attribute));
+	a->key = malloc(sizeof(char) * (strlen(key) + 1));
+	a->value = malloc(sizeof(char) * (strlen(val) + 1));
+
+	/* Fill the Attribute's fields with the passed data */
+	strcpy(a->key, key);
+	strcpy(a->value, val);
+
+	/* Add the attribute to the Node's attributes list */
+	if (n->attributes == NULL) {
+		n->attributes = malloc(sizeof(Attribute*));
+		n->attributes[0] = a;
+		n->numattributes = 1;	
+	} else {
+		n->attributes = realloc(n->attributes, 
+						sizeof(Attribute*) * (n->numattributes + 1));
+		n->attributes[n->numattributes] = a;
+		n->numattributes += 1;
+	}
+	
+	return(0);
+}
+
+/* Search for an Attribute with a given key and remove it; shift the remaining
+   Attributes to fill the slot and realloc the Node's attributes list. */
+int removeattribute(Node *n, char *key) {
+	int i, j;
+	if (n->attributes == NULL) {
+		return(1);
+	}
+	for (i = 0; i < n->numattributes; i++) {
+		if(strcmp(n->attributes[i]->key, key) == 0) {
+			freeattribute(n->attributes[i]);
+			for (j = i+1; j < n->numattributes; j++) {
+				n->attributes[j-1] = n->attributes[j];
+			}
+			n->attributes = realloc(n->attributes, 
+						sizeof(Attribute*) * (n->numattributes - 1));
+			n->numattributes -= 1;
+			if (n->numattributes == 0) {
+				free(n->attributes);
+				n->attributes = NULL;
+			}
+			break;
+		}
+	}
+	return(0);
+}
+
+/* Free an Attribute and the char arrays it points to. */
+int freeattribute(Attribute *a) {
+	if (a == NULL) {
+		return(1);
+	}
+	if (a->key != NULL) {
+		free(a->key);
+	}
+	if (a->value != NULL) {
+		free(a->value);
+	}
+	free(a);
+	return(0);
+}
+
+/* Search for a given key in a Node's attributes. If found, copy its value
+   into a destination buffer. Returns a pointer to the matching Attribute,
+   or NULL if not found. */
+Attribute *getattributebykey(char *dest, int destsz, Node *n, char *key) {
+	int i;
+	for (i = 0; i < n->numattributes; i++) {
+		if (strcmp(n->attributes[i]->key, key) == 0) {
+			if (strlen(n->attributes[i]->value)+1 > destsz) {
+				printf("\x1b[31m[parse] [getattributebykey] "
+					"attribute value truncated and likely malformed:\n"
+					"destination buffer of size %d is too small\x1b[0m\n",
+					destsz);
+			}
+			strncpy(dest, n->attributes[i]->value, destsz-1);
+			return(n->attributes[i]);
+		}
+	}
+	return(NULL);
+}
+
+/* Copy a string of form ' key1="value1" key2="value2"' into a destination
+   buffer containing all the key-value pairs of a Node's attributes list.
+   Copies a truncated string and returns 1 if the destination buffer is too
+   small. Returns 0 on success. */
+int getattributestring(char *dest, int destsz, Node *n) {
+	int i = 0;
+	int ncopied = 0;
+	char buf[MAX_ATTRIBUTESZ];
+	buf[0] = '\0';
+	dest[0] = '\0';
+
+	while (i < n->numattributes) {
+		buf[0] = '\0';
+		if (n->attributes[i] != NULL) {
+			strcpy(buf, " ");
+			strcat(buf, n->attributes[i]->key);
+			strcat(buf, "=\"");
+			strcat(buf, n->attributes[i]->value);
+			strcat(buf, "\"");
+		}
+		if (ncopied + strlen(buf) < destsz) {
+			strcat(dest, buf);
+		} else {
+			printf("\x1b[31m[parse] [getattributestring] "
+				"attribute string truncated and likely malformed:\n"
+				"destination buffer of size %d is too small\x1b[0m\n", destsz);
+			strncat(dest, buf, destsz - ncopied - 1);
+			return(1);
+		}
+		ncopied += strlen(buf);
+		i++;
+	}
+	
+	return(0);
+}
 
 /****************************************************************************/
 /* DEBUGGING                                                                */
@@ -784,6 +898,9 @@ int freenodes(Node *n) {
 void printnodes(Node *n, int depth, int verbose) {
 	int i;
 	char padstring[64];
+	char buf[MAX_ATTRIBUTESZ*8];
+
+	getattributestring(buf, MAX_ATTRIBUTESZ*8, n);
 
 	memset(padstring, ' ', 64);
 	for (i = 0; i < depth; i++) {
@@ -797,7 +914,7 @@ void printnodes(Node *n, int depth, int verbose) {
 		printf("%s+---- \x1b[36m%s\x1b[0m", padstring, gettypestr(n->type));
 	}
 	if (n->attributes != NULL) {
-		printf("\x1b[32m%s\x1b[0m", n->attributes);
+		printf("\x1b[32m%s\x1b[0m", buf);
 	}
 	if (n->contentlen == 0) {
 		printf("\x1b[0m\n%s| \x1b[93m", padstring);
