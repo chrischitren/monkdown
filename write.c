@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "nodes.h"
 #include "parse.h"
 #include "write.h"
 
