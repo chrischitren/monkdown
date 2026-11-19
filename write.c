@@ -11,7 +11,7 @@ void writehtmlstringescaped(FILE *wfp, char *str);
 
 
 int writehtmlfromtemplate(FILE *wfp, FILE *templatefp,
-					char *title, Node *header, Node *main, Node *footer) {
+			char *title, Node *header, Node *nav, Node *main, Node *footer) {
 	char c;
 	int i;
 	char controlbuffer[16];
@@ -29,13 +29,17 @@ int writehtmlfromtemplate(FILE *wfp, FILE *templatefp,
 			if (c == '%') {
 				if (strcmp(controlbuffer, "title") == 0) {
 					fprintf(wfp, "%s", title);
-				} else if (strcmp(controlbuffer, "main") == 0) {
-					if (main != NULL) {
-						writehtmlnoderecursive(wfp, main);
-					}
 				} else if (strcmp(controlbuffer, "header") == 0) {
 					if (header != NULL) {
 						writehtmlnoderecursive(wfp, header);
+					}
+				} else if (strcmp(controlbuffer, "nav") == 0) {
+					if (nav != NULL) {
+						writehtmlnoderecursive(wfp, nav);
+					}
+				} else if (strcmp(controlbuffer, "main") == 0) {
+					if (main != NULL) {
+						writehtmlnoderecursive(wfp, main);
 					}
 				} else if (strcmp(controlbuffer, "footer") == 0) {
 					if (footer != NULL) {

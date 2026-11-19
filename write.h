@@ -5,7 +5,7 @@
 
 /* FILLING AN HTML TEMPLATE (PAGE BUILDING) */
 int writehtmlfromtemplate(FILE *wfp, FILE *templatefp,
-					char *title, Node *header, Node *main, Node *footer);
+			char *title, Node *header, Node *nav, Node *main, Node *footer);
 
 void writehtmlnoderecursive(FILE *wfp, Node *n);
 
